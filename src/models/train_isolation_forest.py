@@ -1,0 +1,32 @@
+import pandas as pd
+from sklearn.ensemble import IsolationForest
+import joblib
+import os
+
+def main():
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    processed_data_dir = os.path.join(base_dir, 'data', 'processed')
+    model_dir = os.path.join(base_dir, 'models')
+
+    os.makedirs(model_dir, exist_ok=True)
+
+    print("Loading processed data...")
+    X_train_path = os.path.join(processed_data_dir, 'X_train.csv')
+    X_train = pd.read_csv(X_train_path)
+
+    print("Training Isolation Forest model...")
+    clf = IsolationForest(
+        n_estimators=100, 
+        max_samples='auto', 
+        contamination=0.015, 
+        random_state=42
+    )
+    clf.fit(X_train)
+
+    model_path = os.path.join(model_dir, 'isolation_forest.joblib')
+    joblib.dump(clf, model_path)
+
+    print(f"Model saved successfully to {model_path}")
+
+if __name__ == '__main__':
+    main()
